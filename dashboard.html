@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenPay Dashboard</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#001b10;
+    color:white;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px;
+    border-bottom:1px solid #075c37;
+}
+
+.logo{
+    color:#19f36b;
+    font-size:25px;
+    font-weight:800;
+}
+
+.logout{
+    border:1px solid #19f36b;
+    background:transparent;
+    color:white;
+    padding:10px 18px;
+    border-radius:25px;
+}
+
+.container{
+    padding:25px;
+    max-width:900px;
+    margin:auto;
+}
+
+.welcome{
+    margin-bottom:25px;
+}
+
+.welcome h1{
+    font-size:32px;
+    margin-bottom:5px;
+}
+
+.welcome p{
+    color:#9fb8ab;
+}
+
+.balance{
+    background:linear-gradient(135deg,#063c25,#08743f);
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:25px;
+}
+
+.balance small{
+    color:#bce9cf;
+}
+
+.balance h2{
+    font-size:38px;
+    margin:10px 0;
+}
+
+.withdraw{
+    background:#19f36b;
+    border:0;
+    padding:13px 22px;
+    border-radius:25px;
+    font-weight:bold;
+    color:#001b10;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:#06251a;
+    border:1px solid #0b7544;
+    padding:22px;
+    border-radius:18px;
+}
+
+.card h3{
+    color:#19f36b;
+    margin-top:0;
+}
+
+.card p{
+    color:#9fb8ab;
+}
+
+.task{
+    margin-top:25px;
+}
+
+.task button{
+    width:100%;
+    margin-top:10px;
+    padding:13px;
+    border:0;
+    border-radius:12px;
+    background:#19f36b;
+    font-weight:bold;
+}
+
+footer{
+    text-align:center;
+    color:#708a7d;
+    padding:30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">G GreenPay</div>
+    <button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+    <div class="welcome">
+        <h1>Welcome to GreenPay 👋</h1>
+        <p id="userEmail">Your GreenPay dashboard</p>
+    </div>
+
+    <div class="balance">
+        <small>Total Balance</small>
+        <h2>₦0.00</h2>
+        <button class="withdraw" onclick="alert('Withdrawal becomes available when you meet the withdrawal requirements.')">
+            Withdraw
+        </button>
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>🎬 Watch & Earn</h3>
+            <p>Watch available content and earn rewards.</p>
+            <button onclick="alert('No tasks available yet.')">View Tasks</button>
+        </div>
+
+        <div class="card">
+            <h3>📝 Quizzes</h3>
+            <p>Complete quizzes and earn rewards.</p>
+            <button onclick="alert('No quizzes available yet.')">Take Quiz</button>
+        </div>
+
+        <div class="card">
+            <h3>👥 Referrals</h3>
+            <p>Invite friends and earn referral rewards.</p>
+            <button onclick="alert('Your referral system will appear here.')">Invite Friends</button>
+        </div>
+
+        <div class="card">
+            <h3>🎁 Daily Bonus</h3>
+            <p>Check in daily to claim available bonuses.</p>
+            <button onclick="alert('Daily bonus is not available yet.')">Claim Bonus</button>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 GreenPay
+</footer>
+
+<script>
+
+const email = localStorage.getItem("greenpay_email");
+
+if(email){
+    document.getElementById("userEmail").textContent = email;
+}
+
+function logout(){
+    localStorage.removeItem("greenpay_email");
+    window.location.href = "greenpay_auth_backend.html";
+}
+
+</script>
+
+</body>
+</html>
