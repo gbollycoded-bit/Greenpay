@@ -1,200 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GreenPay Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-*{box-sizing:border-box}
+  <title>GreenPay Dashboard</title>
 
-body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#001b10;
-    color:white;
-}
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:20px;
-    border-bottom:1px solid #075c37;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.logo{
-    color:#19f36b;
-    font-size:25px;
-    font-weight:800;
-}
+    body {
+      font-family: Arial, sans-serif;
+      background: #001b10;
+      color: white;
+      min-height: 100vh;
+    }
 
-.logout{
-    border:1px solid #19f36b;
-    background:transparent;
-    color:white;
-    padding:10px 18px;
-    border-radius:25px;
-}
+    header {
+      height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid rgba(25, 243, 107, 0.2);
+      background: #00150d;
+    }
 
-.container{
-    padding:25px;
-    max-width:900px;
-    margin:auto;
-}
+    .logo {
+      color: #19f36b;
+      font-size: 27px;
+      font-weight: 800;
+    }
 
-.welcome{
-    margin-bottom:25px;
-}
+    .logout {
+      border: 1px solid #19f36b;
+      background: transparent;
+      color: white;
+      padding: 11px 18px;
+      border-radius: 25px;
+      font-size: 15px;
+      cursor: pointer;
+    }
 
-.welcome h1{
-    font-size:32px;
-    margin-bottom:5px;
-}
+    .logout:hover {
+      background: #19f36b;
+      color: #001b10;
+    }
 
-.welcome p{
-    color:#9fb8ab;
-}
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 35px 20px 60px;
+    }
 
-.balance{
-    background:linear-gradient(135deg,#063c25,#08743f);
-    padding:25px;
-    border-radius:20px;
-    margin-bottom:25px;
-}
+    .welcome {
+      margin-bottom: 25px;
+    }
 
-.balance small{
-    color:#bce9cf;
-}
+    .welcome h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
 
-.balance h2{
-    font-size:38px;
-    margin:10px 0;
-}
+    .welcome span {
+      color: #19f36b;
+    }
 
-.withdraw{
-    background:#19f36b;
-    border:0;
-    padding:13px 22px;
-    border-radius:25px;
-    font-weight:bold;
-    color:#001b10;
-}
+    .email {
+      color: #a9b8b0;
+      font-size: 15px;
+      word-break: break-all;
+    }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-}
+    .balance {
+      background: linear-gradient(135deg, #063c24, #07552e);
+      border: 1px solid rgba(25, 243, 107, 0.25);
+      border-radius: 22px;
+      padding: 28px;
+      margin-bottom: 25px;
+    }
 
-.card{
-    background:#06251a;
-    border:1px solid #0b7544;
-    padding:22px;
-    border-radius:18px;
-}
+    .balance-label {
+      color: #a9c6b5;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
 
-.card h3{
-    color:#19f36b;
-    margin-top:0;
-}
+    .amount {
+      font-size: 42px;
+      font-weight: 800;
+      color: #19f36b;
+    }
 
-.card p{
-    color:#9fb8ab;
-}
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
 
-.task{
-    margin-top:25px;
-}
+    .card {
+      background: #062519;
+      border: 1px solid rgba(25, 243, 107, 0.15);
+      border-radius: 18px;
+      padding: 22px;
+    }
 
-.task button{
-    width:100%;
-    margin-top:10px;
-    padding:13px;
-    border:0;
-    border-radius:12px;
-    background:#19f36b;
-    font-weight:bold;
-}
+    .card-icon {
+      font-size: 25px;
+      margin-bottom: 15px;
+    }
 
-footer{
-    text-align:center;
-    color:#708a7d;
-    padding:30px;
-}
-</style>
+    .card h3 {
+      font-size: 16px;
+      color: #a9b8b0;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 23px;
+      font-weight: 700;
+    }
+
+    .section-title {
+      font-size: 23px;
+      margin-bottom: 15px;
+    }
+
+    .task {
+      background: #062519;
+      border: 1px solid rgba(25, 243, 107, 0.15);
+      border-radius: 17px;
+      padding: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .task h3 {
+      margin-bottom: 5px;
+    }
+
+    .task p {
+      color: #9aaca2;
+      font-size: 14px;
+    }
+
+    .task button {
+      background: #19f36b;
+      border: none;
+      color: #001b10;
+      padding: 11px 17px;
+      border-radius: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 35px 20px;
+      background: #062519;
+      border-radius: 18px;
+      color: #9aaca2;
+    }
+
+    .loading {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 4px solid rgba(25, 243, 107, 0.2);
+      border-top-color: #19f36b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      text-align: center;
+      padding: 30px;
+      color: #ff8d8d;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 0 16px;
+      }
+
+      main {
+        padding: 25px 15px 50px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome h1 {
+        font-size: 27px;
+      }
+
+      .amount {
+        font-size: 36px;
+      }
+
+      .task {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .task button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-    <div class="logo">G GreenPay</div>
-    <button class="logout" onclick="logout()">Logout</button>
-</header>
+  <!-- Loading screen -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading GreenPay...</p>
+  </div>
 
-<div class="container">
+  <!-- Dashboard -->
+  <div id="dashboard" style="display:none;">
 
-    <div class="welcome">
-        <h1>Welcome to GreenPay 👋</h1>
-        <p id="userEmail">Your GreenPay dashboard</p>
-    </div>
+    <header>
+      <div class="logo">GreenPay</div>
 
-    <div class="balance">
-        <small>Total Balance</small>
-        <h2>₦0.00</h2>
-        <button class="withdraw" onclick="alert('Withdrawal becomes available when you meet the withdrawal requirements.')">
-            Withdraw
+      <button class="logout" id="logoutBtn">
+        Logout
+      </button>
+    </header>
+
+    <main>
+
+      <section class="welcome">
+        <h1>
+          Welcome back, <span id="userName">GreenPay user</span> 👋
+        </h1>
+
+        <div class="email" id="userEmail">
+          Loading account...
+        </div>
+      </section>
+
+      <section class="balance">
+        <div class="balance-label">
+          Available Balance
+        </div>
+
+        <div class="amount">
+          ₦0.00
+        </div>
+      </section>
+
+      <section class="cards">
+
+        <div class="card">
+          <div class="card-icon">💰</div>
+          <h3>Total Earned</h3>
+          <p>₦0.00</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">🎯</div>
+          <h3>Tasks Completed</h3>
+          <p>0</p>
+        </div>
+
+        <div class="card">
+          <div class="card-icon">👥</div>
+          <h3>Referrals</h3>
+          <p>0</p>
+        </div>
+
+      </section>
+
+      <h2 class="section-title">
+        Available Tasks
+      </h2>
+
+      <div class="task">
+        <div>
+          <h3>Complete Your Profile</h3>
+          <p>Finish setting up your GreenPay account.</p>
+        </div>
+
+        <button onclick="alert('Profile tasks will be available soon.')">
+          Start
         </button>
-    </div>
+      </div>
 
-    <div class="cards">
-
-        <div class="card">
-            <h3>🎬 Watch & Earn</h3>
-            <p>Watch available content and earn rewards.</p>
-            <button onclick="alert('No tasks available yet.')">View Tasks</button>
+      <div class="task">
+        <div>
+          <h3>Watch & Earn</h3>
+          <p>Watch available content and earn rewards.</p>
         </div>
 
-        <div class="card">
-            <h3>📝 Quizzes</h3>
-            <p>Complete quizzes and earn rewards.</p>
-            <button onclick="alert('No quizzes available yet.')">Take Quiz</button>
+        <button onclick="alert('Watch & Earn will be available soon.')">
+          Start
+        </button>
+      </div>
+
+      <div class="task">
+        <div>
+          <h3>Refer Friends</h3>
+          <p>Invite friends and earn referral rewards.</p>
         </div>
 
-        <div class="card">
-            <h3>👥 Referrals</h3>
-            <p>Invite friends and earn referral rewards.</p>
-            <button onclick="alert('Your referral system will appear here.')">Invite Friends</button>
-        </div>
+        <button onclick="alert('Referral system will be available soon.')">
+          Start
+        </button>
+      </div>
 
-        <div class="card">
-            <h3>🎁 Daily Bonus</h3>
-            <p>Check in daily to claim available bonuses.</p>
-            <button onclick="alert('Daily bonus is not available yet.')">Claim Bonus</button>
-        </div>
+    </main>
+  </div>
 
-    </div>
+  <script>
 
-</div>
+    /*
+      GreenPay Supabase configuration
+    */
 
-<footer>
-    © 2026 GreenPay
-</footer>
+    const SUPABASE_URL =
+      "https://eiazinckyvi yrcmbwwiq.supabase.co".replace(" ", "");
 
-<script>
+    const SUPABASE_KEY =
+      "sb_publishable_pB30eZDXDrNSRTAZOLyqRg_JQ5NcWS4";
 
-const email = localStorage.getItem("greenpay_email");
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
 
-if(email){
-    document.getElementById("userEmail").textContent = email;
-}
 
-function logout(){
-    localStorage.removeItem("greenpay_email");
-    window.location.href = "greenpay_auth_backend.html";
-}
+    /*
+      Check authentication
+    */
 
-</script>
+    async function checkUser() {
+
+      try {
+
+        const {
+          data: { session },
+          error
+        } = await supabaseClient.auth.getSession();
+
+        if (error) {
+          throw error;
+        }
+
+        /*
+          No active session = send user
+          back to the authentication page.
+        */
+
+        if (!session) {
+
+          window.location.href = "auth.html";
+
+          return;
+        }
+
+        const user = session.user;
+
+        /*
+          Display email
+        */
+
+        document.getElementById("userEmail").textContent =
+          user.email || "GreenPay account";
+
+
+        /*
+          Try to get the user's name
+          from their Supabase metadata.
+        */
+
+        const metadata = user.user_metadata || {};
+
+        const name =
+          metadata.full_name ||
+          metadata.name ||
+          metadata.username ||
+          (user.email ? user.email.split("@")[0] : "User");
+
+
+        document.getElementById("userName").textContent =
+          name;
+
+
+        /*
+          Show dashboard
+        */
+
+        document.getElementById("loading").style.display =
+          "none";
+
+        document.getElementById("dashboard").style.display =
+          "block";
+
+      } catch (error) {
+
+        console.error("Authentication error:", error);
+
+        document.getElementById("loading").innerHTML = `
+          <div class="error">
+            <h2>Unable to load GreenPay</h2>
+            <p>Please try logging in again.</p>
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    /*
+      Logout
+    */
+
+    document
+      .getElementById("logoutBtn")
+      .addEventListener("click", async function () {
+
+        this.disabled = true;
+        this.textContent = "Logging out...";
+
+        const { error } =
+          await supabaseClient.auth.signOut();
+
+        if (error) {
+
+          console.error(error);
+
+          this.disabled = false;
+          this.textContent = "Logout";
+
+          alert("Unable to log out. Please try again.");
+
+          return;
+        }
+
+        /*
+          Send user back to login.
+        */
+
+        window.location.href = "auth.html";
+
+      });
+
+
+    /*
+      Also monitor authentication changes.
+    */
+
+    supabaseClient.auth.onAuthStateChange(
+      function (event, session) {
+
+        if (
+          event === "SIGNED_OUT" ||
+          !session
+        ) {
+
+          window.location.href = "auth.html";
+
+        }
+
+      }
+    );
+
+
+    /*
+      Start authentication check.
+    */
+
+    checkUser();
+
+  </script>
 
 </body>
 </html>
