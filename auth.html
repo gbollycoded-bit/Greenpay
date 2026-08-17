@@ -1,47 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GreenPay — Login / Sign Up</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:#02150d;color:#fff;display:flex;align-items:center;justify-content:center;padding:20px}
-.box{width:100%;max-width:430px;background:#031b11;border:1px solid #185d38;border-radius:24px;padding:30px;box-shadow:0 20px 70px #0008}
-.logo{font-size:28px;font-weight:800;color:#16ef61;margin-bottom:28px}.logo span{color:#fff}
-h1{margin:0 0 8px;font-size:30px}.sub{color:#9db1a5;line-height:1.5;margin-bottom:24px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:#062719;padding:4px;border-radius:12px;margin-bottom:22px}
-.tab{border:0;background:transparent;color:#9db1a5;padding:12px;border-radius:9px;font-weight:700;font-size:15px}.tab.active{background:#12e95a;color:#00180b}
-label{display:block;margin:15px 0 7px;color:#cbd8d1;font-size:14px}
-input{width:100%;padding:14px;border:1px solid #245f3e;border-radius:11px;background:#02150d;color:#fff;font-size:16px;outline:none}input:focus{border-color:#16ef61}
-.submit{width:100%;margin-top:22px;padding:15px;border:0;border-radius:12px;background:#12e95a;color:#00180b;font-weight:800;font-size:16px}
-.back{display:block;text-align:center;margin-top:20px;color:#8fffb2;text-decoration:none}
-.msg{display:none;margin-top:15px;padding:12px;border-radius:10px;font-size:14px;line-height:1.4}
-.note{margin-top:20px;padding:12px;border-radius:10px;background:#08281a;color:#9db1a5;font-size:13px;line-height:1.5}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GreenPay — Login & Sign Up</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #001b10;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 42px;
+      font-weight: 800;
+      color: #19f36b;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #a8b8b0;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #06291b;
+      border: 1px solid #124b31;
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 14px;
+      border-radius: 30px;
+      border: 1px solid #19f36b;
+      background: transparent;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .tabs button.active {
+      background: #19f36b;
+      color: #001b10;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      color: #c9d7d0;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #245d42;
+      background: #031d13;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #19f36b;
+    }
+
+    .submit {
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px;
+      border: 0;
+      border-radius: 30px;
+      background: #19f36b;
+      color: #001b10;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .submit:disabled {
+      opacity: .6;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .error {
+      display: block;
+      background: #3b1111;
+      color: #ffb0b0;
+    }
+
+    .success {
+      display: block;
+      background: #0b3b22;
+      color: #9cffbf;
+    }
+
+    .rpc-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #82958c;
+      text-align: center;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #19f36b;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
-<div class="box">
-<div class="logo">G <span>GreenPay</span></div>
-<h1 id="title">Welcome back</h1>
-<div class="sub" id="subtitle">Log in to access your GreenPay account.</div>
-<div class="tabs"><button class="tab active" id="loginTab" type="button">Login</button><button class="tab" id="signupTab" type="button">Sign Up</button></div>
-<form id="authForm">
-<div id="nameField" style="display:none"><label for="name">Full name</label><input id="name" type="text" autocomplete="name" placeholder="Your full name"></div>
-<label for="email">Email</label><input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
-<label for="password">Password</label><input id="password" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters">
-<button class="submit" id="submitBtn" type="submit">Login</button>
-</form>
-<div class="msg" id="message"></div>
-<div class="note">This page is the GreenPay authentication interface. Real account creation/login requires connecting an authentication service such as Supabase.</div>
-<a class="back" href="index.html">← Back to GreenPay</a>
+
+<div class="container">
+
+  <div class="logo">GreenPay</div>
+  <div class="subtitle">Earn • Share • Withdraw</div>
+
+  <div class="card">
+
+    <div class="tabs">
+      <button id="loginTab" class="active" onclick="showLogin()">Login</button>
+      <button id="signupTab" onclick="showSignup()">Sign Up</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox">
+
+      <h2>Welcome back</h2>
+
+      <label>Email</label>
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Enter your email"
+        autocomplete="email"
+      >
+
+      <label>Password</label>
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+      >
+
+      <button class="submit" id="loginButton" onclick="login()">
+        Login
+      </button>
+
+    </div>
+
+
+    <!-- SIGN UP -->
+    <div id="signupBox" class="hidden">
+
+      <h2>Create your account</h2>
+
+      <label>RPC Activation Code</label>
+      <input
+        id="rpcCode"
+        type="text"
+        placeholder="Enter your RPC code"
+        autocomplete="off"
+      >
+
+      <label>Full Name</label>
+      <input
+        id="fullName"
+        type="text"
+        placeholder="Your full name"
+        autocomplete="name"
+      >
+
+      <label>Email</label>
+      <input
+        id="signupEmail"
+        type="email"
+        placeholder="Enter your email"
+        autocomplete="email"
+      >
+
+      <label>Password</label>
+      <input
+        id="signupPassword"
+        type="password"
+        placeholder="Create a password"
+        autocomplete="new-password"
+      >
+
+      <button class="submit" id="signupButton" onclick="signup()">
+        Activate & Create Account
+      </button>
+
+      <div class="rpc-note">
+        An active RPC code is required before you can create a GreenPay account.
+      </div>
+
+    </div>
+
+    <div id="message" class="message"></div>
+
+  </div>
+
+  <a class="back" href="index.html">← Back to GreenPay</a>
+
 </div>
+
+
 <script>
-const params=new URLSearchParams(location.search);let mode=params.get("mode")==="signup"?"signup":"login";
-const loginTab=document.getElementById("loginTab"),signupTab=document.getElementById("signupTab"),title=document.getElementById("title"),subtitle=document.getElementById("subtitle"),nameField=document.getElementById("nameField"),nameInput=document.getElementById("name"),submitBtn=document.getElementById("submitBtn"),message=document.getElementById("message"),form=document.getElementById("authForm");
-function setMode(m){mode=m;let s=m==="signup";loginTab.classList.toggle("active",!s);signupTab.classList.toggle("active",s);nameField.style.display=s?"block":"none";nameInput.required=s;title.textContent=s?"Create your account":"Welcome back";subtitle.textContent=s?"Create your GreenPay account to get started.":"Log in to access your GreenPay account.";submitBtn.textContent=s?"Create Account":"Login";let u=new URL(location.href);u.searchParams.set("mode",mode);history.replaceState({},"",u);message.style.display="none"}
-loginTab.onclick=()=>setMode("login");signupTab.onclick=()=>setMode("signup");
-form.onsubmit=e=>{e.preventDefault();message.style.display="block";message.style.background="#08281a";message.style.color="#9dffbc";message.textContent=mode==="signup"?"Your signup form is ready. Connect GreenPay to an authentication backend to create real accounts.":"Your login form is ready. Connect GreenPay to an authentication backend to sign in."};
-setMode(mode);
+
+const SUPABASE_URL =
+  "https://eiazinckyvi yrcmbwwiq.supabase.co".replace(" ", "");
+
+const SUPABASE_KEY =
+  "sb_publishable_pB30eZDXDrNSRTAZOLyqRg_JQ5NcWS4";
+
+const { createClient } = supabase;
+
+const client = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+// -----------------------------
+// UI
+// -----------------------------
+
+function showLogin() {
+
+  document.getElementById("loginBox").classList.remove("hidden");
+  document.getElementById("signupBox").classList.add("hidden");
+
+  document.getElementById("loginTab").classList.add("active");
+  document.getElementById("signupTab").classList.remove("active");
+
+  clearMessage();
+}
+
+
+function showSignup() {
+
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("signupBox").classList.remove("hidden");
+
+  document.getElementById("loginTab").classList.remove("active");
+  document.getElementById("signupTab").classList.add("active");
+
+  clearMessage();
+}
+
+
+function showMessage(text, type) {
+
+  const box = document.getElementById("message");
+
+  box.textContent = text;
+  box.className = "message " + type;
+}
+
+
+function clearMessage() {
+
+  const box = document.getElementById("message");
+
+  box.textContent = "";
+  box.className = "message";
+}
+
+
+// -----------------------------
+// LOGIN
+// -----------------------------
+
+async function login() {
+
+  clearMessage();
+
+  const email =
+    document.getElementById("loginEmail").value.trim();
+
+  const password =
+    document.getElementById("loginPassword").value;
+
+  const button =
+    document.getElementById("loginButton");
+
+  if (!email || !password) {
+
+    showMessage(
+      "Please enter your email and password.",
+      "error"
+    );
+
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Logging in...";
+
+  try {
+
+    const { data, error } =
+      await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    showMessage(
+      "Login successful. Opening your dashboard...",
+      "success"
+    );
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 800);
+
+  } catch (error) {
+
+    showMessage(
+      error.message || "Unable to login.",
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "Login";
+  }
+}
+
+
+// -----------------------------
+// SIGN UP + RPC ACTIVATION
+// -----------------------------
+
+async function signup() {
+
+  clearMessage();
+
+  const rpcCode =
+    document.getElementById("rpcCode").value.trim();
+
+  const fullName =
+    document.getElementById("fullName").value.trim();
+
+  const email =
+    document.getElementById("signupEmail").value.trim();
+
+  const password =
+    document.getElementById("signupPassword").value;
+
+  const button =
+    document.getElementById("signupButton");
+
+
+  if (!rpcCode || !fullName || !email || !password) {
+
+    showMessage(
+      "Please complete all fields.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (password.length < 6) {
+
+    showMessage(
+      "Password must contain at least 6 characters.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  button.disabled = true;
+  button.textContent = "Creating account...";
+
+
+  try {
+
+    // Create the Supabase account
+    const { data, error } =
+      await client.auth.signUp({
+
+        email: email,
+
+        password: password,
+
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (!data.user) {
+      throw new Error(
+        "Account could not be created."
+      );
+    }
+
+
+    // Activate the RPC code
+    button.textContent = "Activating RPC...";
+
+
+    const { data: activated, error: rpcError } =
+      await client.rpc(
+        "activate_rpc_code",
+        {
+          rpc_code: rpcCode
+        }
+      );
+
+
+    if (rpcError) {
+
+      throw rpcError;
+
+    }
+
+
+    if (activated !== true) {
+
+      showMessage(
+        "Invalid or already-used RPC activation code.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    // Store the user's name
+    await client.auth.updateUser({
+
+      data: {
+        full_name: fullName,
+        rpc_activated: true
+      }
+
+    });
+
+
+    showMessage(
+      "RPC activated successfully! Your GreenPay account is ready.",
+      "success"
+    );
+
+
+    setTimeout(() => {
+
+      window.location.href =
+        "dashboard.html";
+
+    }, 1200);
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      error.message ||
+      "Something went wrong during signup.",
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent =
+      "Activate & Create Account";
+
+  }
+
+}
+
+
+// -----------------------------
+// CHECK EXISTING SESSION
+// -----------------------------
+
+client.auth.getSession().then(({ data }) => {
+
+  if (data.session) {
+
+    window.location.href =
+      "dashboard.html";
+
+  }
+
+});
+
 </script>
+
 </body>
 </html>
